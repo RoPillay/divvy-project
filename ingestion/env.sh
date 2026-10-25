@@ -1,0 +1,5 @@
+export PROJECT_ID="divvy-project-512716"
+export REGION="us-central1"
+export BUCKET="divvy-raw-srv"
+export POLLER_SA="divvy-poller-sa@${PROJECT_ID}.iam.gserviceaccount.com"
+export SCHED_SA="divvy-scheduler-sa@${PROJECT_ID}.iam.gserviceaccount.com"
