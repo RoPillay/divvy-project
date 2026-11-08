@@ -1,0 +1,33 @@
+USE ROLE DIVVY_ENGINEER;
+USE WAREHOUSE DIVVY_WH;
+USE DATABASE DIVVY;
+
+CREATE SCHEMA IF NOT EXISTS RAW;
+USE SCHEMA RAW;
+
+-- How to read the live feed files (one JSON object per file)
+CREATE FILE FORMAT IF NOT EXISTS JSON_FF
+  TYPE = JSON;
+
+-- How to read the trip history CSVs (gzipped, with a header row)
+CREATE FILE FORMAT IF NOT EXISTS TRIPS_CSV_FF
+  TYPE = CSV
+  SKIP_HEADER = 1
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+  EMPTY_FIELD_AS_NULL = TRUE
+  COMPRESSION = AUTO;
+
+-- How to read CTA GTFS files (match columns by header name)
+CREATE FILE FORMAT IF NOT EXISTS GTFS_CSV_FF
+  TYPE = CSV
+  PARSE_HEADER = TRUE
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+  EMPTY_FIELD_AS_NULL = TRUE;
+
+-- Pointer to the bucket, using the integration from Step 4
+CREATE STAGE IF NOT EXISTS DIVVY_GCS_STAGE
+  URL = 'gcs://divvy-raw-srv/'
+  STORAGE_INTEGRATION = GCS_DIVVY_INT
+  FILE_FORMAT = JSON_FF;
+
+  LIST @DIVVY_GCS_STAGE/station_status/ PATTERN = '.*[.]json';
