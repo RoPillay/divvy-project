@@ -20,7 +20,7 @@ parsed as (
         feed_updated_at,
         polled_at,
         file_name,
-
+DIVVY.DEV_STAGING.STG_STATION_STATUS
         st:num_bikes_available::int                       as bikes_available,
         st:num_ebikes_available::int                      as ebikes_available,
         st:num_bikes_disabled::int                        as bikes_disabled,
