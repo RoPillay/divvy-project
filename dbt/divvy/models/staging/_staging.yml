@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_station_status
+    description: One row per station per distinct report, flattened from the live GBFS feed.
+    columns:
+      - name: station_id
+        tests:
+          - not_null
+      - name: last_reported_at
+        tests:
+          - not_null
+      - name: bikes_available
+        tests:
+          - not_null
+      - name: docks_available
+        tests:
+          - not_null

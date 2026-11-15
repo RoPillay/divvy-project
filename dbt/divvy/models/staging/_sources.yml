@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    database: DIVVY
+    schema: RAW
+    tables:
+      - name: station_status_raw
+        description: One row per poller file; RAW holds the full GBFS station_status snapshot (~2,000 stations).
+      - name: station_information_raw
+        description: One row per daily station_information snapshot.
+      - name: divvy_trips_raw
+        description: Divvy monthly trip files, 2020-04 onward, all columns as text.
+      - name: weather_raw
+        description: Open-Meteo hourly archive, one row per yearly file.
+      - name: cta_stops_raw
+        description: CTA GTFS stops.txt; L stations are LOCATION_TYPE = 1 with stop IDs 40000-49999.

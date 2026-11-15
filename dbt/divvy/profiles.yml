@@ -1,0 +1,22 @@
+divvy:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: DIVVY_ENGINEER
+      database: DIVVY
+      warehouse: DIVVY_WH
+      schema: DEV
+      threads: 8
+
+    prod:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: DIVVY_ENGINEER
+      database: DIVVY
+      warehouse: DIVVY_WH
+      schema: PROD
+      threads: 8
