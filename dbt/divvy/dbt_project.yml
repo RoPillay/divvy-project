@@ -10,6 +10,14 @@ macro-paths: ["macros"]
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 
+vars:
+  stockout_min_minutes: 5
+  stale_minutes: 30
+  near_l_km: 0.4
+  rebalance_min_jump: 5
+  rebalance_max_minutes: 10
+  wet_precip_mm: 0.1
+
 models:
   divvy:
     staging:
