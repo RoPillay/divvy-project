@@ -12,6 +12,6 @@ sources:
       - name: divvy_trips_raw
         description: Divvy monthly trip files, 2020-04 onward, all columns as text.
       - name: weather_raw
-        description: Open-Meteo hourly archive, one row per yearly file.
+        description: Open-Meteo hourly archive, one row per downloaded file.
       - name: cta_stops_raw
-        description: CTA GTFS stops.txt; L stations are LOCATION_TYPE = 1 with stop IDs 40000-49999.
+        description: CTA GTFS stops.txt, all columns as text.

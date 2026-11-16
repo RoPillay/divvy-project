@@ -1,14 +1,20 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='incremental',
+    unique_key=['station_id', 'last_reported_at'],
+    incremental_strategy='merge'
+) }}
 
 with snapshots as (
 
     select
         r.file_name,
         r.file_last_modified                              as polled_at,
-        to_timestamp(r.raw:last_updated::int)             as feed_updated_at,
         s.value                                           as st
     from {{ source('raw', 'station_status_raw') }} r,
          lateral flatten(input => r.raw:data:stations) s
+    {% if is_incremental() %}
+    where r.file_last_modified > (select max(polled_at) from {{ this }})
+    {% endif %}
 
 ),
 
@@ -16,22 +22,25 @@ parsed as (
 
     select
         st:station_id::string                             as station_id,
-        to_timestamp(st:last_reported::int)               as last_reported_at,
-        feed_updated_at,
+        to_timestamp_ntz(st:last_reported::int)           as last_reported_at,
         polled_at,
         file_name,
-DIVVY.DEV_STAGING.STG_STATION_STATUS
+
         st:num_bikes_available::int                       as bikes_available,
         st:num_ebikes_available::int                      as ebikes_available,
         st:num_bikes_disabled::int                        as bikes_disabled,
         st:num_docks_available::int                       as docks_available,
         st:num_docks_disabled::int                        as docks_disabled,
 
-        st:is_installed::int = 1                          as is_installed,
-        st:is_renting::int   = 1                          as is_renting,
-        st:is_returning::int = 1                          as is_returning
+        coalesce(st:is_installed::int, 1) = 1             as is_installed,
+        coalesce(st:is_renting::int,   1) = 1             as is_renting,
+        coalesce(st:is_returning::int, 1) = 1             as is_returning
 
-    from snapshots
+        from snapshots
+    where st:station_id is not null
+      and st:last_reported is not null
+      -- some stations report a placeholder time (1970) before going live
+      and to_timestamp_ntz(st:last_reported::int) >= '2020-01-01'
 
 )
 

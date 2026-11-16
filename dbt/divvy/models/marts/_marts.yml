@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: dim_station
+    description: One row per Divvy station, with capacity, rack flag, and nearest L station.
+    columns:
+      - name: station_id
+        tests: [unique, not_null]
+
+  - name: dim_time
+    description: One row per UTC hour with Chicago-time attributes.
+    columns:
+      - name: hour_utc
+        tests: [unique, not_null]
+
+  - name: dim_weather
+    description: One row per UTC hour of Chicago weather with analysis categories.
+    columns:
+      - name: hour_utc
+        tests: [unique, not_null]
+
+  - name: fct_station_snapshots
+    description: One row per station report interval.
+    columns:
+      - name: snapshot_id
+        tests: [unique, not_null]
+      - name: station_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_station')
+              field: station_id
+      - name: hour_utc
+        tests:
+          - relationships:
+              to: ref('dim_time')
+              field: hour_utc
+          - relationships:
+              to: ref('dim_weather')
+              field: hour_utc
+              config:
+                severity: warn
+
+  - name: fct_stockout_events
+    description: One row per empty or full episode lasting at least stockout_min_minutes.
+    columns:
+      - name: stockout_event_id
+        tests: [unique, not_null]
+      - name: station_id
+        tests:
+          - relationships:
+              to: ref('dim_station')
+              field: station_id
+      - name: stockout_type
+        tests:
+          - accepted_values:
+              values: ['empty', 'full']
+
+  - name: fct_rebalancing_events
+    description: Likely rebalancing actions inferred from sudden jumps in bike counts.
+    columns:
+      - name: rebalancing_event_id
+        tests: [unique, not_null]
+      - name: station_id
+        tests:
+          - relationships:
+              to: ref('dim_station')
+              field: station_id

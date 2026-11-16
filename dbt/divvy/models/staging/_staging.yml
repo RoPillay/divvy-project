@@ -2,17 +2,43 @@ version: 2
 
 models:
   - name: stg_station_status
-    description: One row per station per distinct report, flattened from the live GBFS feed.
+    description: One row per station per distinct report, from the live GBFS feed (UTC).
     columns:
       - name: station_id
-        tests:
-          - not_null
+        tests: [not_null]
       - name: last_reported_at
-        tests:
-          - not_null
+        tests: [not_null]
+      - name: polled_at
+        tests: [not_null]
       - name: bikes_available
-        tests:
-          - not_null
+        tests: [not_null]
       - name: docks_available
-        tests:
-          - not_null
+        tests: [not_null]
+
+  - name: stg_station_information
+    description: Latest details for every station seen in the live feed.
+    columns:
+      - name: station_id
+        tests: [unique, not_null]
+      - name: station_name
+        tests: [not_null]
+
+  - name: stg_trips
+    description: Typed Divvy trips, 2020-04 onward, with UTC timestamps.
+    columns:
+      - name: ride_id
+        tests: [unique, not_null]
+      - name: started_at_utc
+        tests: [not_null]
+
+  - name: stg_weather
+    description: Hourly Chicago weather from Open-Meteo (UTC).
+    columns:
+      - name: hour_utc
+        tests: [unique, not_null]
+
+  - name: stg_cta_l_stations
+    description: CTA L stations (parent stations) with coordinates.
+    columns:
+      - name: l_stop_id
+        tests: [unique, not_null]

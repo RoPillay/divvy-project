@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_station_status_intervals
+    description: Each station report as an interval (valid_from to valid_to) with its station_state.
+    columns:
+      - name: station_id
+        tests: [not_null]
+      - name: station_state
+        tests:
+          - accepted_values:
+              values: ['empty', 'full', 'ok', 'out_of_service']
+
+  - name: int_station_distance_to_l
+    description: Nearest CTA L station and distance (km) for each Divvy station.
+    columns:
+      - name: station_id
+        tests: [unique, not_null]
+
+  - name: int_station_crosswalk
+    description: Trip-file station ID to live station_id, with match method.
+    columns:
+      - name: trip_station_id
+        tests: [unique, not_null]
+      - name: match_method
+        tests:
+          - accepted_values:
+              values: ['short_name', 'name', 'unmatched']
