@@ -9,6 +9,8 @@ with snapshots as (
     from DIVVY.RAW.station_status_raw r,
          lateral flatten(input => r.raw:data:stations) s
     
+    where r.file_last_modified > (select max(polled_at) from DIVVY.PROD_staging.stg_station_status)
+    
 
 ),
 

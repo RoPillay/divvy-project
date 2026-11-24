@@ -20,6 +20,7 @@ vars:
   inactive_max_changes: 10      # new: fewer bike-count changes than this over the window = likely inactive
   chronic_empty_pct: 0.5        # new: empty more than half of in-service time = chronically empty
   repeat_min_episodes: 20       # new: this many separate stockouts = repeat-stockout station
+  flicker_window_minutes: 30
 
 models:
   divvy:
