@@ -17,6 +17,9 @@ vars:
   rebalance_min_jump: 5
   rebalance_max_minutes: 10
   wet_precip_mm: 0.1
+  inactive_max_changes: 10      # new: fewer bike-count changes than this over the window = likely inactive
+  chronic_empty_pct: 0.5        # new: empty more than half of in-service time = chronically empty
+  repeat_min_episodes: 20       # new: this many separate stockouts = repeat-stockout station
 
 models:
   divvy:
@@ -29,3 +32,6 @@ models:
     marts:
       +materialized: table
       +schema: marts
+    serving:                    # new
+      +materialized: table
+      +schema: serving

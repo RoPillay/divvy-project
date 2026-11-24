@@ -2,7 +2,7 @@
   
     
 
-        create or replace transient table DIVVY.DEV_staging.stg_station_status
+        create or replace transient table DIVVY.PROD_staging.stg_station_status
          as
         (
 

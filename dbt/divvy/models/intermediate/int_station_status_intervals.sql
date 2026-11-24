@@ -13,7 +13,10 @@ info as (
 
 latest_poll as (
 
-    select max(polled_at) as max_polled_at from status
+    select
+        max(polled_at) as max_polled_at,
+        min(polled_at) as collection_start
+    from status
 
 ),
 
@@ -42,9 +45,21 @@ ordered as (
 with_end as (
 
     select
-        o.*,
+        o.station_id,
+        greatest(o.valid_from, lp.collection_start)                   as valid_from,
+        o.valid_from < lp.collection_start                            as is_clipped,
         coalesce(o.next_report_at, lp.max_polled_at)                  as valid_to,
-        o.next_report_at is null                                      as is_current
+        o.next_report_at is null                                      as is_current,
+        o.bikes_available,
+        o.ebikes_available,
+        o.bikes_disabled,
+        o.docks_available,
+        o.docks_disabled,
+        o.is_installed,
+        o.is_renting,
+        o.is_returning,
+        o.capacity,
+        o.is_rack_or_corral
     from ordered o
     cross join latest_poll lp
 
@@ -67,6 +82,7 @@ select
     is_returning,
     is_rack_or_corral,
     is_current,
+    is_clipped,
     datediff('second', valid_from, valid_to) / 60.0
         > {{ var('stale_minutes') }}                                  as is_stale,
     case
@@ -75,4 +91,5 @@ select
         when docks_available = 0 and is_returning                      then 'full'
         else 'ok'
     end                                                               as station_state
-from with_end
+from with_end 
+where valid_to > valid_from

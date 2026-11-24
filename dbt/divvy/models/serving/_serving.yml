@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: srv_station_profile
+    description: One row per station over the live window, with time empty or full, stockout counts, and station_type.
+    columns:
+      - name: station_id
+        tests: [unique, not_null]
+      - name: station_type
+        tests:
+          - accepted_values:
+              values: ['rack_or_corral', 'chronic_or_inactive', 'repeat_stockout', 'normal']
+
+  - name: srv_station_hour
+    description: One row per station per UTC hour, with minutes empty, full, and in service, joined to time, weather, and station.
+    columns:
+      - name: station_hour_id
+        tests: [unique, not_null]
+      - name: station_id
+        tests:
+          - relationships:
+              to: ref('dim_station')
+              field: station_id
